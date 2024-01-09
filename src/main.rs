@@ -112,7 +112,8 @@ extern "C" fn init() {
 
     // create a checkerboard texture
     let pixels: [u32; 2 * 2] = [
-        0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000,
+        0xFF000000, 0xFFFFFFFF,
+        0xFFFFFFFF, 0xFF000000,
     ];
     // NOTE: SLOT_tex is provided by shader code generation
     let mut image_desc = sg::ImageDesc { width: 2, height: 2, ..Default::default() };
@@ -167,8 +168,8 @@ extern "C" fn frame() {
     let state = unsafe { &mut STATE };
     let t = (sapp::frame_duration() * 60.0) as f32;
     //println!("{}", t);
-    state.rx += 1.0 * t;
-    state.ry += 2.0 * t;
+    state.rx += 0.4 * t;
+    state.ry += 0.6 * t;
 
     // vertex shader uniform with model-view-projection matrix
     let vs_params = shader::VsParams { mvp: compute_mvp(state.rx, state.ry) };

@@ -31,7 +31,7 @@ pub fn texcube_shader_desc(backend: sg::Backend) -> sg::ShaderDesc {
             desc.fs.source = &FS_SOURCE_GLSL330 as *const _ as *const _;
             desc.fs.entry = b"main\0".as_ptr() as *const _;
             desc.fs.images[0].used = true;
-            desc.fs.images[0].multisampled = false;
+            desc.fs.images[0].multisampled = true;
             desc.fs.images[0].image_type = sg::ImageType::Dim2;
             desc.fs.images[0].sample_type = sg::ImageSampleType::Float;
             desc.fs.samplers[0].used = true;
@@ -40,6 +40,32 @@ pub fn texcube_shader_desc(backend: sg::Backend) -> sg::ShaderDesc {
             desc.fs.image_sampler_pairs[0].image_slot = 0;
             desc.fs.image_sampler_pairs[0].sampler_slot = 0;
             desc.fs.image_sampler_pairs[0].glsl_name = b"tex_smp\0".as_ptr() as *const _;
+            desc.label = b"texcube_shader\0".as_ptr() as *const _;
+        },
+        sg::Backend::D3d11 => {
+            desc.attrs[0].sem_name = b"TEXCOORD\0".as_ptr() as *const _;
+            desc.attrs[0].sem_index = 0;
+            desc.attrs[1].sem_name = b"TEXCOORD\0".as_ptr() as *const _;
+            desc.attrs[1].sem_index = 1;
+            desc.attrs[2].sem_name = b"TEXCOORD\0".as_ptr() as *const _;
+            desc.attrs[2].sem_index = 2;
+            desc.vs.source = &VS_SOURCE_HLSL4 as *const _ as *const _;
+            desc.vs.d3d11_target = b"vs_4_0\0".as_ptr() as *const _;
+            desc.vs.entry = b"main\0".as_ptr() as *const _;
+            desc.vs.uniform_blocks[0].size = 64;
+            desc.vs.uniform_blocks[0].layout = sg::UniformLayout::Std140;
+            desc.fs.source = &FS_SOURCE_HLSL4 as *const _ as *const _;
+            desc.fs.d3d11_target = b"ps_4_0\0".as_ptr() as *const _;
+            desc.fs.entry = b"main\0".as_ptr() as *const _;
+            desc.fs.images[0].used = true;
+            desc.fs.images[0].multisampled = true;
+            desc.fs.images[0].image_type = sg::ImageType::Dim2;
+            desc.fs.images[0].sample_type = sg::ImageSampleType::Float;
+            desc.fs.samplers[0].used = true;
+            desc.fs.samplers[0].sampler_type = sg::SamplerType::Filtering;
+            desc.fs.image_sampler_pairs[0].used = true;
+            desc.fs.image_sampler_pairs[0].image_slot = 0;
+            desc.fs.image_sampler_pairs[0].sampler_slot = 0;
             desc.label = b"texcube_shader\0".as_ptr() as *const _;
         },
         _ => {},
