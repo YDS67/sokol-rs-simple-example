@@ -167,9 +167,12 @@ extern "C" fn init() {
 extern "C" fn frame() {
     let state = unsafe { &mut STATE };
     let t = (sapp::frame_duration() * 60.0) as f32;
-    //println!("{}", t);
     state.rx += 0.4 * t;
     state.ry += 0.6 * t;
+
+    let fps = 1.0 / sapp::frame_duration();
+
+    sapp::set_window_title(&format!("Sokol-rust example. FPS: {:.0}", fps));
 
     // vertex shader uniform with model-view-projection matrix
     let vs_params = shader::VsParams { mvp: compute_mvp(state.rx, state.ry) };
@@ -225,10 +228,11 @@ fn main() {
         frame_cb: Some(frame),
         cleanup_cb: Some(cleanup),
         event_cb: Some(poll_events),
+        swap_interval: 0,
         width: 800,
         height: 600,
         sample_count: 4,
-        window_title: b"Sokol-rust example\0".as_ptr() as _,
+        window_title: "Sokol-rust example\0".as_bytes().as_ptr() as _,
         icon: sapp::IconDesc { sokol_default: true, ..Default::default() },
         logger: sapp::Logger { func: Some(slog::slog_func), ..Default::default() },
         ..Default::default()
