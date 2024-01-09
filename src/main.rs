@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//  texcube.rs
+//  texcube.rs, modified by YDS67
 //  Texture creation, rendering with texture, packed vertex components.
 //------------------------------------------------------------------------------
 
@@ -111,12 +111,11 @@ extern "C" fn init() {
     });
 
     // create a checkerboard texture
-    let pixels: [u32; 4 * 4] = [
-        0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFF000000, 0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF,
+    let pixels: [u32; 2 * 2] = [
+        0xFFFFFFFF, 0xFF000000, 0xFFFFFFFF, 0xFF000000,
     ];
     // NOTE: SLOT_tex is provided by shader code generation
-    let mut image_desc = sg::ImageDesc { width: 4, height: 4, ..Default::default() };
+    let mut image_desc = sg::ImageDesc { width: 2, height: 2, ..Default::default() };
     image_desc.data.subimage[0][0] = sg::slice_as_range(&pixels);
     state.bind.fs.images[shader::SLOT_TEX] = sg::make_image(&image_desc);
 
@@ -159,7 +158,7 @@ extern "C" fn init() {
     // default pass action, clear to blue-ish
     state.pass_action.colors[0] = sg::ColorAttachmentAction {
         load_action: sg::LoadAction::Clear,
-        clear_value: sg::Color { r: 0.25, g: 0.5, b: 0.75, a: 1.0 },
+        clear_value: sg::Color { r: 0.8, g: 0.8, b: 0.8, a: 1.0 },
         ..Default::default()
     };
 }
@@ -228,7 +227,7 @@ fn main() {
         width: 800,
         height: 600,
         sample_count: 4,
-        window_title: b"texcube\0".as_ptr() as _,
+        window_title: b"Sokol-rust example\0".as_ptr() as _,
         icon: sapp::IconDesc { sokol_default: true, ..Default::default() },
         logger: sapp::Logger { func: Some(slog::slog_func), ..Default::default() },
         ..Default::default()
