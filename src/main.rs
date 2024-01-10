@@ -34,8 +34,8 @@ pub struct Vertex {
     pub z: f32,
 
     pub color: u32,
-    pub u: u16,
-    pub v: u16,
+    pub u: f32,
+    pub v: f32,
 }
 
 extern "C" fn init() {
@@ -48,48 +48,38 @@ extern "C" fn init() {
         ..Default::default()
     });
 
-    /*
-        Cube vertex buffer with packed vertex formats for color and texture coords.
-        Note that a vertex format which must be portable across all
-        backends must only use the normalized integer formats
-        (BYTE4N, UBYTE4N, SHORT2N, SHORT4N), which can be converted
-        to floating point formats in the vertex shader inputs.
-        The reason is that D3D11 cannot convert from non-normalized
-        formats to floating point inputs (only to integer inputs),
-        and WebGL2 / GLES2 don't support integer vertex shader inputs.
-    */
     #[rustfmt::skip]
     const VERTICES: &[Vertex] = &[
         // pos                                color              uvs
-        Vertex { x: -1.0,  y: -1.0, z: -1.0,  color: 0xFF0000FF, u:     0, v:     0 },
-        Vertex { x:  1.0,  y: -1.0, z: -1.0,  color: 0xFF0000FF, u: 32767, v:     0 },
-        Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFF0000FF, u: 32767, v: 32767 },
-        Vertex { x: -1.0,  y:  1.0, z: -1.0,  color: 0xFF0000FF, u:     0, v: 32767 },
+        Vertex { x: -1.0,  y: -1.0, z: -1.0,  color: 0xFF0000FF, u: 0.0, v: 0.0 },
+        Vertex { x:  1.0,  y: -1.0, z: -1.0,  color: 0xFF0000FF, u: 1.0, v: 0.0 },
+        Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFF0000FF, u: 1.0, v: 1.0 },
+        Vertex { x: -1.0,  y:  1.0, z: -1.0,  color: 0xFF0000FF, u: 0.0, v: 1.0 },
 
-        Vertex { x: -1.0,  y: -1.0, z:  1.0,  color: 0xFF00FF00, u:     0, v:     0 },
-        Vertex { x:  1.0,  y: -1.0, z:  1.0,  color: 0xFF00FF00, u: 32767, v:     0 },
-        Vertex { x:  1.0,  y:  1.0, z:  1.0,  color: 0xFF00FF00, u: 32767, v: 32767 },
-        Vertex { x: -1.0,  y:  1.0, z:  1.0,  color: 0xFF00FF00, u:     0, v: 32767 },
+        Vertex { x: -1.0,  y: -1.0, z:  1.0,  color: 0xFF00FF00, u: 0.0, v: 0.0 },
+        Vertex { x:  1.0,  y: -1.0, z:  1.0,  color: 0xFF00FF00, u: 1.0, v: 0.0 },
+        Vertex { x:  1.0,  y:  1.0, z:  1.0,  color: 0xFF00FF00, u: 1.0, v: 1.0 },
+        Vertex { x: -1.0,  y:  1.0, z:  1.0,  color: 0xFF00FF00, u: 0.0, v: 1.0 },
 
-        Vertex { x: -1.0,  y: -1.0, z: -1.0,  color: 0xFFFF0000, u:     0, v:     0 },
-        Vertex { x: -1.0,  y:  1.0, z: -1.0,  color: 0xFFFF0000, u: 32767, v:     0 },
-        Vertex { x: -1.0,  y:  1.0, z:  1.0,  color: 0xFFFF0000, u: 32767, v: 32767 },
-        Vertex { x: -1.0,  y: -1.0, z:  1.0,  color: 0xFFFF0000, u:     0, v: 32767 },
+        Vertex { x: -1.0,  y: -1.0, z: -1.0,  color: 0xFFFF0000, u: 0.0, v: 0.0 },
+        Vertex { x: -1.0,  y:  1.0, z: -1.0,  color: 0xFFFF0000, u: 1.0, v: 0.0 },
+        Vertex { x: -1.0,  y:  1.0, z:  1.0,  color: 0xFFFF0000, u: 1.0, v: 1.0 },
+        Vertex { x: -1.0,  y: -1.0, z:  1.0,  color: 0xFFFF0000, u: 0.0, v: 1.0 },
 
-        Vertex { x:  1.0,  y: -1.0, z: -1.0,  color: 0xFFFF007F, u:     0, v:     0 },
-        Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFFFF007F, u: 32767, v:     0 },
-        Vertex { x:  1.0,  y:  1.0, z:  1.0,  color: 0xFFFF007F, u: 32767, v: 32767 },
-        Vertex { x:  1.0,  y: -1.0, z:  1.0,  color: 0xFFFF007F, u:     0, v: 32767 },
+        Vertex { x:  1.0,  y: -1.0, z: -1.0,  color: 0xFFFF007F, u: 0.0, v: 0.0 },
+        Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFFFF007F, u: 1.0, v: 0.0 },
+        Vertex { x:  1.0,  y:  1.0, z:  1.0,  color: 0xFFFF007F, u: 1.0, v: 1.0 },
+        Vertex { x:  1.0,  y: -1.0, z:  1.0,  color: 0xFFFF007F, u: 0.0, v: 1.0 },
 
-        Vertex { x: -1.0,  y: -1.0, z: -1.0,  color: 0xFFFF7F00, u:     0, v:     0 },
-        Vertex { x: -1.0,  y: -1.0, z:  1.0,  color: 0xFFFF7F00, u: 32767, v:     0 },
-        Vertex { x:  1.0,  y: -1.0, z:  1.0,  color: 0xFFFF7F00, u: 32767, v: 32767 },
-        Vertex { x:  1.0,  y: -1.0, z: -1.0,  color: 0xFFFF7F00, u:     0, v: 32767 },
+        Vertex { x: -1.0,  y: -1.0, z: -1.0,  color: 0xFFFF7F00, u: 0.0, v: 0.0 },
+        Vertex { x: -1.0,  y: -1.0, z:  1.0,  color: 0xFFFF7F00, u: 1.0, v: 0.0 },
+        Vertex { x:  1.0,  y: -1.0, z:  1.0,  color: 0xFFFF7F00, u: 1.0, v: 1.0 },
+        Vertex { x:  1.0,  y: -1.0, z: -1.0,  color: 0xFFFF7F00, u: 0.0, v: 1.0 },
 
-        Vertex { x: -1.0,  y:  1.0, z: -1.0,  color: 0xFF007FFF, u:     0, v:     0 },
-        Vertex { x: -1.0,  y:  1.0, z:  1.0,  color: 0xFF007FFF, u: 32767, v:     0 },
-        Vertex { x:  1.0,  y:  1.0, z:  1.0,  color: 0xFF007FFF, u: 32767, v: 32767 },
-        Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFF007FFF, u:     0, v: 32767 },
+        Vertex { x: -1.0,  y:  1.0, z: -1.0,  color: 0xFF007FFF, u: 0.0, v: 0.0 },
+        Vertex { x: -1.0,  y:  1.0, z:  1.0,  color: 0xFF007FFF, u: 1.0, v: 0.0 },
+        Vertex { x:  1.0,  y:  1.0, z:  1.0,  color: 0xFF007FFF, u: 1.0, v: 1.0 },
+        Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFF007FFF, u: 0.0, v: 1.0 },
     ];
 
     state.bind.vertex_buffers[0] = sg::make_buffer(&sg::BufferDesc {
@@ -141,7 +131,7 @@ extern "C" fn init() {
 
                 attrs[shader::ATTR_VS_POS] = sg::VertexAttrState { format: sg::VertexFormat::Float3, ..Default::default() };
                 attrs[shader::ATTR_VS_COLOR0] = sg::VertexAttrState { format: sg::VertexFormat::Ubyte4n, ..Default::default() };
-                attrs[shader::ATTR_VS_TEXCOORD0] = sg::VertexAttrState { format: sg::VertexFormat::Short2n, ..Default::default() };
+                attrs[shader::ATTR_VS_TEXCOORD0] = sg::VertexAttrState { format: sg::VertexFormat::Float2, ..Default::default() };
 
                 attrs
             },
