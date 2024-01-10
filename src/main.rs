@@ -3,6 +3,8 @@
 //  Texture creation, rendering with texture, packed vertex components.
 //------------------------------------------------------------------------------
 
+#![windows_subsystem = "windows"]
+
 mod math;
 mod shader;
 mod assets;
