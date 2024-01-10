@@ -146,7 +146,7 @@ extern "C" fn init() {
             ..Default::default()
         },
         index_type: sg::IndexType::Uint16,
-        cull_mode: sg::CullMode::Back,
+        cull_mode: sg::CullMode::None,
         depth: sg::DepthState {
             compare: sg::CompareFunc::LessEqual,
             write_enabled: true,

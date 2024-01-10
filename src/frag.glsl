@@ -7,10 +7,13 @@ in vec2 uv;
 in vec4 color;
 in vec3 pos_f;
 
-float l;
+float l = length(pos_f*pos_f)/sqrt(2.0);
 
 void main()
 {
-    l = length(pos_f);
-    frag_color = 0.5*texture(tex_smp, uv) + 0.25*color*l*l;
+    if (l < 1.0) {
+        frag_color = 0.7 * texture(tex_smp, uv) + 0.3 * color;
+    } else {
+        discard;
+    }
 }
