@@ -12,5 +12,5 @@ float l;
 void main()
 {
     l = length(pos_f);
-    frag_color = 0.5*texture(tex_smp, uv*l) + 0.2*color;
+    frag_color = 0.3*texture(tex_smp, uv*l) + 0.4*color;
 }

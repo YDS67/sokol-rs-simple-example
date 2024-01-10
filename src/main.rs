@@ -41,6 +41,7 @@ extern "C" fn init() {
     sg::setup(&sg::Desc {
         context: sglue::context(),
         logger: sg::Logger { func: Some(slog::slog_func), ..Default::default() },
+        disable_validation: false,
         ..Default::default()
     });
 
