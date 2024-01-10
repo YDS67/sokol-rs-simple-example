@@ -13,5 +13,5 @@ void main()
     pos_f = pos.xyz;
     gl_Position = mat4(vs_params[0], vs_params[1], vs_params[2], vs_params[3]) * pos;
     color = color0;
-    uv = texcoord0 * 5.0;
+    uv = texcoord0;
 }

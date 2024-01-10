@@ -5,6 +5,7 @@
 
 mod math;
 mod shader;
+mod assets;
 
 use math as m;
 use sokol::{app::{self as sapp, Event, Keycode, EventType}, gfx::{self as sg}, glue as sglue, log as slog};
@@ -111,14 +112,12 @@ extern "C" fn init() {
         ..Default::default()
     });
 
-    // create a checkerboard texture
-    let pixels: [u32; 2 * 2] = [
-        0xFF000000, 0xFFFFFFFF,
-        0xFFFFFFFF, 0xFF000000,
-    ];
+
+    let assets = assets::Assets::load();
+
     // NOTE: SLOT_tex is provided by shader code generation
-    let mut image_desc = sg::ImageDesc { width: 2, height: 2, ..Default::default() };
-    image_desc.data.subimage[0][0] = sg::slice_as_range(&pixels);
+    let mut image_desc = sg::ImageDesc { width: assets.width, height: assets.height, ..Default::default() };
+    image_desc.data.subimage[0][0] = sg::slice_as_range(&assets.tex);
     state.bind.fs.images[shader::SLOT_TEX] = sg::make_image(&image_desc);
 
     // create a sampler object
