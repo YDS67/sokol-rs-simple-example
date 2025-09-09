@@ -42,7 +42,7 @@ extern "C" fn init() {
     let state = unsafe { &mut STATE };
 
     sg::setup(&sg::Desc {
-        context: sglue::context(),
+        environment: sglue::environment(),
         logger: sg::Logger { func: Some(slog::slog_func), ..Default::default() },
         disable_validation: false,
         ..Default::default()
@@ -82,11 +82,8 @@ extern "C" fn init() {
         Vertex { x:  1.0,  y:  1.0, z: -1.0,  color: 0xFF007FFF, u: 0.0, v: 1.0 },
     ];
 
-    state.bind.vertex_buffers[0] = sg::make_buffer(&sg::BufferDesc {
-        data: sg::slice_as_range(VERTICES),
-        _type: sg::BufferType::Vertexbuffer,
-        ..Default::default()
-    });
+    state.bind.vertex_buffers[0] =
+        sg::make_buffer(&sg::BufferDesc { data: sg::slice_as_range(VERTICES), ..Default::default() });
 
     // create an index buffer for the cube
     #[rustfmt::skip]
@@ -100,7 +97,7 @@ extern "C" fn init() {
     ];
     state.bind.index_buffer = sg::make_buffer(&sg::BufferDesc {
         data: sg::slice_as_range(INDICES),
-        _type: sg::BufferType::Indexbuffer,
+        usage: sg::BufferUsage { index_buffer: true, ..Default::default() },
         ..Default::default()
     });
 
@@ -110,10 +107,13 @@ extern "C" fn init() {
     // NOTE: SLOT_tex is provided by shader code generation
     let mut image_desc = sg::ImageDesc { width: assets.width, height: assets.height, ..Default::default() };
     image_desc.data.subimage[0][0] = sg::slice_as_range(&assets.tex);
-    state.bind.fs.images[shader::SLOT_TEX] = sg::make_image(&image_desc);
+    state.bind.views[shader::SLOT_TEX] = sg::make_view(&sg::ViewDesc {
+        texture: sg::TextureViewDesc { image: sg::make_image(&image_desc), ..Default::default() },
+        ..Default::default()
+    });
 
     // create a sampler object
-    state.bind.fs.samplers[shader::SLOT_SMP] = sg::make_sampler(&sg::SamplerDesc {
+    state.bind.samplers[shader::SLOT_SMP] = sg::make_sampler(&sg::SamplerDesc {
         min_filter: sg::Filter::Nearest,
         mag_filter: sg::Filter::Nearest,
         wrap_u: sg::Wrap::Repeat,
@@ -169,10 +169,14 @@ extern "C" fn frame() {
     // vertex shader uniform with model-view-projection matrix
     let vs_params = shader::VsParams { mvp: compute_mvp(state.rx, state.ry) };
 
-    sg::begin_default_pass(&state.pass_action, sapp::width(), sapp::height());
+    sg::begin_pass(&sg::Pass {
+        action: state.pass_action,
+        swapchain: sglue::swapchain(),
+        ..Default::default()
+    });
     sg::apply_pipeline(state.pip);
     sg::apply_bindings(&state.bind);
-    sg::apply_uniforms(sg::ShaderStage::Vs, shader::SLOT_VS_PARAMS, &sg::value_as_range(&vs_params));
+    sg::apply_uniforms(shader::SLOT_VS_PARAMS, &sg::value_as_range(&vs_params));
     sg::draw(0, 36, 1);
     sg::end_pass();
     sg::commit();
