@@ -12,7 +12,7 @@ float l = length(pos_f*pos_f)/sqrt(2.0);
 void main()
 {
     if (l < 1.0) {
-        frag_color = 0.5 * texture(tex_smp, uv) + 0.5 * color;
+        frag_color = 0.8 * texture(tex_smp, uv) + 0.2 * color;
     } else {
         discard;
     }
